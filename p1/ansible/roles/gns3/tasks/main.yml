@@ -1,0 +1,59 @@
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: Install common prerequisites
+  apt:
+    name:
+      - python3-pip
+      - python3-setuptools
+      - python3-wheel
+      - python3-pyqt5
+      - wget
+      - unzip
+      - sudo
+      - software-properties-common
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Add GNS3 PPA (Ubuntu only)
+  apt_repository:
+    repo: ppa:gns3/ppa
+    state: present
+  become: yes
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Update apt cache after adding PPA (Ubuntu only)
+  apt:
+    update_cache: yes
+  become: yes
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Install GNS3 GUI and server (Ubuntu only)
+  apt:
+    name:
+      - gns3-gui
+      - gns3-server
+    state: present
+  become: yes
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+# Debian (pas de PPA) → installer via pip global
+- name: Install GNS3 via pip3 (Debian only)
+  pip:
+    name:
+      - gns3-server
+      - gns3-gui
+    executable: pip3
+    state: present
+  become: yes
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Add current user to necessary groups
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker, kvm, ubridge, wireshark
+    append: yes
+  become: yes

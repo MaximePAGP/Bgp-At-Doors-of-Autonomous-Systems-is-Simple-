@@ -1,6 +1,5 @@
-- name: Install docker
-  hosts:
-  - all
+- name: Install Gns3
+  hosts: all
   become: yes
   roles:
-    - docker
+    - gns3

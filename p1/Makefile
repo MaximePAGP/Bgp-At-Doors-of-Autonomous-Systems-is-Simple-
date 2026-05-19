@@ -1,9 +1,7 @@
 up:
-	ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yml
+	ansible-playbook ./ansible/playbook.yml 
 
 # 	source ./.venv/bin/activate
-ansible:
-	ansible-playbook -i ./ansible/inventory.ini ./ansible/playbook.yml
 
 re:
 	make fclean
