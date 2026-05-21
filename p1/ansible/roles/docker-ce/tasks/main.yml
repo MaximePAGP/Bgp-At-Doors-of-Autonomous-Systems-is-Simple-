@@ -1,57 +1,44 @@
-- name: Install Docker on Ubuntu using official Docker repo
-  become: true
-  ansible.builtin.apt:
-    update_cache: yes
+- name: Remove old Docker repository file (avoid conflicts)
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/docker.list
+    state: absent
+  become: yes
 
-- name: Ensure dependencies are installed
-  ansible.builtin.package:
-    name:
-      - ca-certificates
-      - curl
-      - gnupg
-      - lsb-release
-    state: present
-
-- name: Create Docker GPG key directory
+- name: Create keyrings directory
   ansible.builtin.file:
     path: /etc/apt/keyrings
     state: directory
     mode: "0755"
+  become: yes
 
-- name: Download Docker's official GPG key
+- name: Download Docker GPG key (Ubuntu)
   ansible.builtin.get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
-    dest: /etc/apt/keyrings/docker.asc
+    dest: /etc/apt/keyrings/docker.gpg
     mode: "0644"
+  when: ansible_facts['distribution'] == "Ubuntu"
+  become: yes
 
-- name: Add Docker repository to Apt sources
+- name: Download Docker GPG key (Debian)
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.gpg
+    mode: "0644"
+  when: ansible_facts['distribution'] == "Debian"
+  become: yes
+
+- name: Add Docker repository (Ubuntu)
   ansible.builtin.apt_repository:
-    repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
     state: present
     filename: docker
+  when: ansible_facts['distribution'] == "Ubuntu"
+  become: yes
 
-- name: Update apt cache after adding Docker repository
-  ansible.builtin.apt:
-    update_cache: yes
-
-- name: Install Docker and Docker Compose
-  ansible.builtin.package:
-    name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      - docker-buildx-plugin
-      - docker-compose-plugin
+- name: Add Docker repository (Debian)
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
     state: present
-
-- name: Ensure Docker service is enabled and started
-  ansible.builtin.service:
-    name: docker
-    state: started
-    enabled: yes
-
-- name: Add ubuntu user to docker group
-  ansible.builtin.user:
-    name: ubuntu
-    groups: docker
-    append: yes
+    filename: docker
+  when: ansible_facts['distribution'] == "Debian"
+  become: yes
