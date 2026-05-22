@@ -1,5 +1,9 @@
-FROM    {{ image_os }}{{ image_version }}
+FROM    {{ image_os }}:{{ image_version }}
 
-RUN apk add --no-cache busybox
+RUN     apk add --no-cache busybox
 
-CMD ["busybox", "sh"]
+ENV     HOSTNAME {{ hostname }}
+RUN     echo "{{ hostname }}" > /etc/hostname \
+            && echo "127.0.0.1 {{ hostname }}" >> /etc/hosts
+
+CMD     ["busybox", "sh"]
