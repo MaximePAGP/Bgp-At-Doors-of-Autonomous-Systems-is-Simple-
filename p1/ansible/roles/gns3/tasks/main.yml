@@ -1,26 +1,42 @@
+---
+
+# =========================
+# UPDATE APT CACHE
+# =========================
 - name: Update apt cache
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
   become: yes
 
-- name: Install prerequisites
-  apt:
+
+# =========================
+# COMMON PACKAGES (NO KVM)
+# =========================
+- name: Install minimal prerequisites
+  ansible.builtin.apt:
     name:
-      - ubridge
+      - python3-pip
+      - python3-venv
+      - wireshark
+      - docker.io
     state: present
   become: yes
 
 
+# =========================
+# UBUNTU ONLY
+# =========================
 - block:
+
     - name: Add GNS3 PPA
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: ppa:gns3/ppa
         state: present
         update_cache: yes
       become: yes
 
-    - name: Install GNS3
-      apt:
+    - name: Install GNS3 (Ubuntu)
+      ansible.builtin.apt:
         name:
           - gns3-gui
           - gns3-server
@@ -28,43 +44,71 @@
         update_cache: yes
       become: yes
 
+    - name: Install ubridge (Ubuntu only)
+      ansible.builtin.apt:
+        name: ubridge
+        state: present
+      become: yes
+
   when: ansible_facts['distribution'] == "Ubuntu"
+  become: yes
 
 
+# =========================
+# DEBIAN ONLY (SAFE VENV)
+# =========================
 - block:
-  - name: Install pip3 and PyQt5 (Debian only)
-    apt:
-      name:
-        - python3-pip
-        - python3-pyqt5
-        - python3-pyqt5.qtsvg
-        - python3-pyqt5.qtwebsockets
-      state: present
-    become: yes
 
-  - name: Install GNS3 server via pip3 (Debian only)
-    pip:
-      name: gns3-server
-      executable: pip3
-      extra_args: "--break-system-packages"
-      state: present
-    become: yes
+    - name: Create GNS3 virtualenv
+      ansible.builtin.command:
+        cmd: python3 -m venv /opt/gns3-venv
+        creates: /opt/gns3-venv/bin/pip
+      become: yes
+
+    - name: Install GNS3 server in venv
+      ansible.builtin.pip:
+        name: gns3-server
+        virtualenv: /opt/gns3-venv
+        state: present
+      become: yes
+
   when: ansible_facts['distribution'] == "Debian"
+  become: yes
 
 
-- name: Add user to groups
-  user:
+# =========================
+# DOCKER ACCESS
+# =========================
+- name: Ensure Docker service is started
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+
+- name: Ensure wireshark group exists
+  ansible.builtin.group:
+    name: wireshark
+    state: present
+  become: yes
+
+
+- name: Add user to docker group
+  ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups:
-      - ubridge
+      - docker
       - wireshark
-      - kvm
     append: yes
   become: yes
-  ignore_errors: yes
 
+
+# =========================
+# CLEANUP
+# =========================
 - name: Clean apt cache
-  apt:
+  ansible.builtin.apt:
     autoclean: yes
     autoremove: yes
   become: yes

@@ -1,0 +1,19 @@
+FROM {{ image_os }}:{{ image_version }}
+
+RUN apk update && apk add --no-cache \
+    frr \
+    busybox \
+    bash \
+    iproute2 \
+    sudo \
+    && rm -rf /var/cache/apk/*
+
+RUN sed -i 's/bgpd=no/bgpd=yes/' /etc/frr/daemons \
+    && sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons \
+    && sed -i 's/isisd=no/isisd=yes/' /etc/frr/daemons
+
+COPY {{ frr_output_path }}/ /etc/frr/
+
+RUN chown -R frr:frr /etc/frr
+
+CMD ["bash"]

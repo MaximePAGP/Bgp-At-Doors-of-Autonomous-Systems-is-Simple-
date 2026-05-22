@@ -1,0 +1,6 @@
+router isis
+ net {{ isis_net }}
+ is-type level-2-only
+{% for interface in isis_interfaces %}
+ interface {{ interface }}
+{% endfor %}

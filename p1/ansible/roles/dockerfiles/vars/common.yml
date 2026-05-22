@@ -1,0 +1,3 @@
+router_id: 1.1.1.1
+frr_output_path: "/tmp/frr_dockerfiles"
+frr_config_path: "{{ frr_output_path }}/configs"
