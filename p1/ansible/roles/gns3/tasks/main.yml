@@ -1,114 +1,83 @@
----
-
-# =========================
-# UPDATE APT CACHE
-# =========================
 - name: Update apt cache
-  ansible.builtin.apt:
+  apt:
     update_cache: yes
   become: yes
 
-
 # =========================
-# COMMON PACKAGES (NO KVM)
-# =========================
-- name: Install minimal prerequisites
-  ansible.builtin.apt:
-    name:
-      - python3-pip
-      - python3-venv
-      - wireshark
-      - docker.io
-    state: present
-  become: yes
-
-
-# =========================
-# UBUNTU ONLY
+# UBUNTU BLOCK
 # =========================
 - block:
 
     - name: Add GNS3 PPA
-      ansible.builtin.apt_repository:
+      apt_repository:
         repo: ppa:gns3/ppa
         state: present
         update_cache: yes
       become: yes
 
-    - name: Install GNS3 (Ubuntu)
-      ansible.builtin.apt:
+    - name: Install GNS3 on Ubuntu
+      apt:
         name:
           - gns3-gui
           - gns3-server
+          - ubridge
+          - python3-pyqt5
+          - python3-pip
+          - wireshark
         state: present
         update_cache: yes
       become: yes
 
-    - name: Install ubridge (Ubuntu only)
-      ansible.builtin.apt:
-        name: ubridge
-        state: present
-      become: yes
-
   when: ansible_facts['distribution'] == "Ubuntu"
-  become: yes
-
 
 # =========================
-# DEBIAN ONLY (SAFE VENV)
+# DEBIAN BLOCK
 # =========================
 - block:
-
-    - name: Create GNS3 virtualenv
-      ansible.builtin.command:
-        cmd: python3 -m venv /opt/gns3-venv
-        creates: /opt/gns3-venv/bin/pip
+    - name: Install Python3, pip et pipx
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - pipx
+        state: present
+        update_cache: yes
       become: yes
 
-    - name: Install GNS3 server in venv
-      ansible.builtin.pip:
-        name: gns3-server
-        virtualenv: /opt/gns3-venv
+    - name: Ensure pipx bin path is in system PATH
+      lineinfile:
+        path: /etc/environment
+        regexp: 'PATH='
+        line: 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin"'
         state: present
       become: yes
 
+    - name: Install GNS3 server via pipx
+      command: pipx install gns3-server
+      become: yes
+      environment:
+        PIPX_HOME: /opt/pipx
+        PIPX_BIN_DIR: /usr/local/bin
+
+    - name: Install GNS3 GUI via pipx
+      command: pipx install gns3-gui
+      become: yes
+      environment:
+        PIPX_HOME: /opt/pipx
+        PIPX_BIN_DIR: /usr/local/bin
+
+    - name: Inject PyQt6 et gns3-server dans l'env GUI
+      command: pipx inject gns3-gui PyQt6 gns3-server
+      become: yes
+      environment:
+        PIPX_HOME: /opt/pipx
+        PIPX_BIN_DIR: /usr/local/bin
+
   when: ansible_facts['distribution'] == "Debian"
-  become: yes
 
 
-# =========================
-# DOCKER ACCESS
-# =========================
-- name: Ensure Docker service is started
-  ansible.builtin.service:
-    name: docker
-    state: started
-    enabled: yes
-  become: yes
-
-
-- name: Ensure wireshark group exists
-  ansible.builtin.group:
-    name: wireshark
-    state: present
-  become: yes
-
-
-- name: Add user to docker group
-  ansible.builtin.user:
-    name: "{{ ansible_user }}"
-    groups:
-      - docker
-      - wireshark
-    append: yes
-  become: yes
-
-
-# =========================
-# CLEANUP
-# =========================
 - name: Clean apt cache
-  ansible.builtin.apt:
+  apt:
     autoclean: yes
     autoremove: yes
   become: yes
