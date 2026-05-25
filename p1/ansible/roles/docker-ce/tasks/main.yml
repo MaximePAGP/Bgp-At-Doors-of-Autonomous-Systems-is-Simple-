@@ -4,6 +4,17 @@
     state: absent
   become: yes
 
+- name: Set Docker architecture
+  ansible.builtin.set_fact:
+    docker_arch: >-
+      {{
+        {
+          'x86_64': 'amd64',
+          'aarch64': 'arm64',
+          'armv7l': 'armhf'
+        }.get(ansible_architecture, ansible_architecture)
+      }}
+
 - name: Create keyrings directory
   ansible.builtin.file:
     path: /etc/apt/keyrings
@@ -49,12 +60,15 @@
 
   - name: Add Docker repository (Ubuntu)
     ansible.builtin.apt_repository:
-      repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+      repo: >
+        deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc]
+        https://download.docker.com/linux/ubuntu
+        {{ ansible_distribution_release }} stable
       state: present
       filename: docker
       update_cache: yes
     become: yes
-
+  
   - name: Install docker-ce (Ubuntu)
     ansible.builtin.apt:
       name:
