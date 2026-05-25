@@ -12,7 +12,7 @@ RUN     sed -i 's/bgpd=no/bgpd=yes/' /etc/frr/daemons \
         && sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons \
         && sed -i 's/isisd=no/isisd=yes/' /etc/frr/daemons
 
-
+ENV     HOSTNAME {{ hostname }}
 RUN     rm -rf /etc/network/* || true
 
 

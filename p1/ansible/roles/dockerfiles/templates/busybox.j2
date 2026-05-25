@@ -3,7 +3,9 @@ FROM    {{ image_os }}:{{ image_version }}
 RUN     apk add --no-cache busybox
 
 ENV     HOSTNAME {{ hostname }}
-RUN     echo "{{ hostname }}" > /etc/hostname \
-            && echo "127.0.0.1 {{ hostname }}" >> /etc/hosts
+
+RUN     rm -rf /etc/network/* || true
+
+RUN     echo "{{ hostname }}" > /etc/hostname
 
 CMD     ["busybox", "sh"]
