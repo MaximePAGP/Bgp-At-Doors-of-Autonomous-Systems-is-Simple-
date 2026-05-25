@@ -1,6 +1,6 @@
 gns3_version: "2.2.32"
 
-image_os: "apline"
+image_os: "alpine"
 image_version: "3.23.4"
 
 hostname: "magrondi"
