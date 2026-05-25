@@ -2,17 +2,17 @@
   ansible.builtin.include_vars:
     file: "../vars/common.yml"
 
-- name: Load BGP variables
-  ansible.builtin.include_vars:
-    file: "../vars/bgp.yml"
-
-- name: Load OSPF variables
-  ansible.builtin.include_vars:
-    file: "../vars/ospf.yml"
-
-- name: Load IS-IS variables
-  ansible.builtin.include_vars:
-    file: "../vars/isis.yml"
+# - name: Load BGP variables
+  # ansible.builtin.include_vars:
+    # file: "../vars/bgp.yml"
+# 
+# - name: Load OSPF variables
+  # ansible.builtin.include_vars:
+    # file: "../vars/ospf.yml"
+# 
+# - name: Load IS-IS variables
+  # ansible.builtin.include_vars:
+    # file: "../vars/isis.yml"
 
 - name: Ensure output directory exists
   ansible.builtin.file:
@@ -36,17 +36,17 @@
     src: network.j2
     dest: "{{ frr_output_path }}/Dockerfile.network"
 
-- name: Generate BGP config
-  ansible.builtin.template:
-    src: bgpd.conf.j2
-    dest: "{{ frr_config_path }}/bgpd.conf"
-
-- name: Generate OSPF config
-  ansible.builtin.template:
-    src: ospfd.conf.j2
-    dest: "{{ frr_config_path }}/ospfd.conf"
-
-- name: Generate IS-IS config
-  ansible.builtin.template:
-    src: isisd.conf.j2
-    dest: "{{ frr_config_path }}/isisd.conf"
+# - name: Generate BGP config
+  # ansible.builtin.template:
+    # src: bgpd.conf.j2
+    # dest: "{{ frr_config_path }}/bgpd.conf"
+# 
+# - name: Generate OSPF config
+  # ansible.builtin.template:
+    # src: ospfd.conf.j2
+    # dest: "{{ frr_config_path }}/ospfd.conf"
+# 
+# - name: Generate IS-IS config
+  # ansible.builtin.template:
+    # src: isisd.conf.j2
+    # dest: "{{ frr_config_path }}/isisd.conf"

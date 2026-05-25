@@ -12,12 +12,14 @@ RUN     sed -i 's/bgpd=no/bgpd=yes/' /etc/frr/daemons \
         && sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons \
         && sed -i 's/isisd=no/isisd=yes/' /etc/frr/daemons
 
-ENV     HOSTNAME {{ hostname }}
-RUN     echo "{{ hostname }}" > /etc/hostname \
-            && echo "127.0.0.1 {{ hostname }}" >> /etc/hosts
 
-COPY    {{ frr_output_path }}/ /etc/frr/
+RUN     rm -rf /etc/network/* || true
 
-RUN     chown -R frr:frr /etc/frr
+
+RUN     echo "{{ hostname }}" > /etc/hostname
+
+
+RUN     mkdir -p /var/run/frr /var/log/frr \
+        && chown -R frr:frr /etc/frr /var/run/frr /var/log/frr
 
 CMD     ["bash"]
