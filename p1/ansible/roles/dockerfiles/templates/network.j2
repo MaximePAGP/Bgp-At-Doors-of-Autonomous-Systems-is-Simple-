@@ -8,12 +8,13 @@ RUN     apk update && apk add --no-cache \
         sudo \
         && rm -rf /var/cache/apk/*
 
-RUN     sed -i 's/bgpd=no/bgpd=yes/' /etc/frr/daemons \
+RUN     sed -i 's/zebra=no/zebra=yes/' /etc/frr/daemons \
         && sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons \
-        && sed -i 's/isisd=no/isisd=yes/' /etc/frr/daemons
+        && sed -i 's/isisd=no/isisd=yes/' /etc/frr/daemons \
+        && sed -i 's/bgpd=no/bgpd=yes/' /etc/frr/daemons 
 
 ENV     HOSTNAME {{ hostname }}
-RUN     rm -rf /etc/network/* || true
+RUN     rm -rf /etc/network/* || true   
 
 
 RUN     echo "{{ hostname }}" > /etc/hostname
@@ -22,4 +23,4 @@ RUN     echo "{{ hostname }}" > /etc/hostname
 RUN     mkdir -p /var/run/frr /var/log/frr \
         && chown -R frr:frr /etc/frr /var/run/frr /var/log/frr
 
-CMD     ["bash"]
+CMD     ["/usr/lib/frr/frrinit.sh", "start"]
