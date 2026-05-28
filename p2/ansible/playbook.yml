@@ -1,0 +1,17 @@
+- name: Install Docker-ce
+  hosts: all
+  become: yes
+  roles:
+    - docker-ce
+
+- name: Install Gns3
+  hosts: all
+  become: yes
+  roles:
+    - gns3
+
+- name: Generate Dockerfiles
+  hosts: all
+  become: yes
+  roles:
+    - dockerfiles
