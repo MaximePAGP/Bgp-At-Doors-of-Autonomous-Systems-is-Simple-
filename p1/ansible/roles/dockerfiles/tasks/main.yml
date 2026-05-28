@@ -30,11 +30,14 @@
   ansible.builtin.template:
     src: busybox.j2
     dest: "{{ frr_output_path }}/Dockerfile.busybox"
+    mode: 775
+
 
 - name: Generate Dockerfile for Network container
   ansible.builtin.template:
     src: network.j2
     dest: "{{ frr_output_path }}/Dockerfile.network"
+    mode: 775
 
 - name: Build Docker images
   community.docker.docker_image:
