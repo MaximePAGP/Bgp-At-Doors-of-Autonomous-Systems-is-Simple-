@@ -36,6 +36,25 @@
     src: network.j2
     dest: "{{ frr_output_path }}/Dockerfile.network"
 
+- name: Build Docker images
+  community.docker.docker_image:
+    name: "{{ item.name }}"
+    tag: latest
+    source: build
+    build:
+      path: "{{ item.path }}"
+      dockerfile: "{{ item.dockerfile }}"
+    force_source: true
+  loop:
+    - name: busybox
+      path: "{{ frr_output_path }}"
+      dockerfile: Dockerfile.busybox
+
+    - name: network
+      path: "{{ frr_output_path }}"
+      dockerfile: Dockerfile.network
+
+
 # - name: Generate BGP config
   # ansible.builtin.template:
     # src: bgpd.conf.j2
