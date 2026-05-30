@@ -23,4 +23,4 @@ RUN     echo "{{ hostname }}" > /etc/hostname
 RUN     mkdir -p /var/run/frr /var/log/frr \
         && chown -R frr:frr /etc/frr /var/run/frr /var/log/frr
 
-CMD     ["/bin/sh", "-c", "/usr/lib/frr/frrinit.sh start && tail -f /dev/null"]
+CMD     ["/bin/sh", "-c", "/usr/lib/frr/frrinit.sh start & sleep 3 && /bin/bash; tail -f /dev/null"]

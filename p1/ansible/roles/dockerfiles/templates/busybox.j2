@@ -8,4 +8,4 @@ RUN     rm -rf /etc/network/* || true
 
 RUN     echo "{{ hostname }}" > /etc/hostname
 
-CMD     ["tail", "-f", "/dev/null"]
+CMD     ["/bin/sh"]
