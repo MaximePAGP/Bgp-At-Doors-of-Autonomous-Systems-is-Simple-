@@ -1,0 +1,5 @@
+FROM    {{ image_os }}:{{ image_version }}
+
+RUN     apk add --no-cache busybox
+
+CMD     ["/bin/sh"]
