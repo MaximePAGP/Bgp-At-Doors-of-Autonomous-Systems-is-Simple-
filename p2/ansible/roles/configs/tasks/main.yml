@@ -1,0 +1,6 @@
+- name: Load all variables
+  ansible.builtin.include_vars:
+    file: "../vars/all.yml"
+
+
+  
