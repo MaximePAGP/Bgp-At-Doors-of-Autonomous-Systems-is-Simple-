@@ -1,1 +1,18 @@
 #!/bin/bash
+
+vtysh
+
+configure terminal
+
+interface eth1
+ip address {{ r2_ip }}{{r2_submask }}
+
+interface eth0
+ ip address {{ backbone }}2{{ backbone_submask }}
+exit
+
+ip route {{ area2 }}0{{ area2_submask }} {{ backbone }}1
+
+
+end
+write memory

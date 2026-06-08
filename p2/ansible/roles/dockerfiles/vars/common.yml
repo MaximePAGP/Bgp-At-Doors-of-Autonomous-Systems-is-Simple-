@@ -1,2 +1,0 @@
-frr_output_path: "../dockerfiles"
-frr_config_path: "{{ frr_output_path }}/configs"

@@ -4,3 +4,6 @@ image_os: "alpine"
 image_version: "3.23.4"
 
 hostname: "magrondi"
+
+frr_output_path: "../dockerfiles"
+frr_config_path: "{{ frr_output_path }}/configs"

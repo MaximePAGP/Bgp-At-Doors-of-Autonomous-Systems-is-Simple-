@@ -1,6 +1,6 @@
-- name: Load common variables
-  ansible.builtin.include_vars:
-    file: "../vars/common.yml"
+# - name: Load common variables
+#   ansible.builtin.include_vars:
+#     file: "../vars/common.yml"
 
 # - name: Load BGP variables
   # ansible.builtin.include_vars:

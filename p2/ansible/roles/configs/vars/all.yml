@@ -1,0 +1,25 @@
+area1: "192.168.1."
+area1_submask: "/24"
+
+r1_ip: "{{ area1 }}1"
+r1_submask: "/24"
+
+h1_ip: "{{ area1 }}100"
+h1_submask: "/24"
+
+
+backbone: "10.0.0."
+backbone_submask: "/24"
+
+
+
+area2: "192.168.2."
+area2_submask: "/24"
+
+
+r2_ip: "{{ area2 }}1"
+r2_submask: "/24"
+
+h2_ip: "{{ area2 }}100"
+h2_submask: "/24"
+
