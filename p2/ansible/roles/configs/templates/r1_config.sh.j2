@@ -8,10 +8,12 @@ interface eth1
 ip address {{ r1_ip }}{{r1_submask }}
 
 interface eth0
- ip address {{ backbone }}1{{ backbone_submask }}
+ ip address {{ backbone1 }}1{{ backbone1_submask }}
 exit
 
-ip route {{ area2 }}0{{ area2_submask }} {{ backbone }}2
+
+# next hop
+ip route {{ area2 }}0{{ area2_submask }} {{ backbone1 }}2
 
 
 end

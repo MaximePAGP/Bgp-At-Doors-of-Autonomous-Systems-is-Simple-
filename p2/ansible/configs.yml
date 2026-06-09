@@ -11,6 +11,7 @@
       host_magrondi-2: h2_config.sh
       switch_magrondi: switch_config.sh
 
+    # Get your credentials here : ~/.config/GNS3/2.2/gns3_server.conf
     gns3_url: "http://127.0.0.1:3080"
     gns3_user: ""
     gns3_password: ""

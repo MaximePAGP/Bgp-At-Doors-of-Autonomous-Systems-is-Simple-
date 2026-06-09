@@ -4,6 +4,9 @@ up:
 configs:
 	ansible-playbook ./ansible/configs.yml
 
+dockerfiles:
+	ansible-playbook ./ansible/dockerfiles.yml
+
 # 	source ./.venv/bin/activate
 
 re:
@@ -20,4 +23,4 @@ fclean:
 	k3d cluster delete -a
 
 
-.PHONY: up re stop reload fclean configs
+.PHONY: up re stop reload fclean configs dockerfiles

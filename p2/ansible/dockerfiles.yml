@@ -1,0 +1,11 @@
+- name: Generate Dockerfiles
+  hosts: all
+  become: yes
+  roles:
+    - dockerfiles
+  
+- name: Generate GNS3 Configuration
+  hosts: all
+  become: yes
+  roles:
+    - configs

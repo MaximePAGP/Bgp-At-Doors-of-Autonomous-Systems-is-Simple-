@@ -9,14 +9,16 @@ interface eth1
 ip address {{ r2_ip }}{{r2_submask }}
 
 interface eth0
- ip address {{ backbone }}2{{ backbone_submask }}
+ ip address {{ backbone1 }}2{{ backbone1_submask }}
 exit
 
-ip route {{ area2 }}0{{ area2_submask }} {{ backbone }}1
+
+# next hop
+ip route {{ area1 }}0{{ area1_submask }} {{ backbone1 }}1
 
 
 end
-write memory
+write memory    
 
 
 EOF

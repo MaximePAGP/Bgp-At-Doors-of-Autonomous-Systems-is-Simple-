@@ -8,9 +8,8 @@ h1_ip: "{{ area1 }}100"
 h1_submask: "/24"
 
 
-backbone: "10.0.0."
-backbone_submask: "/24"
-
+backbone1: "10.0.1."
+backbone1_submask: "/24"
 
 
 area2: "192.168.2."
