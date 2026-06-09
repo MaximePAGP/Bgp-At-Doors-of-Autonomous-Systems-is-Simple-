@@ -1,6 +1,6 @@
 #!/bin/bash
 
-vtysh
+vtysh << EOF
 
 configure terminal
 
@@ -17,4 +17,4 @@ ip route {{ area2 }}0{{ area2_submask }} {{ backbone }}2
 end
 write memory
 
-
+EOF
