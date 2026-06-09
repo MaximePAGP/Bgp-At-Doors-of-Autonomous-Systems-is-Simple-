@@ -1,6 +1,9 @@
 up:
 	ansible-playbook ./ansible/playbook.yml 
 
+configs:
+	ansible-playbook ./ansible/configs.yml
+
 # 	source ./.venv/bin/activate
 
 re:
@@ -17,4 +20,4 @@ fclean:
 	k3d cluster delete -a
 
 
-.PHONY: up re stop reload fclean ansible
+.PHONY: up re stop reload fclean configs
