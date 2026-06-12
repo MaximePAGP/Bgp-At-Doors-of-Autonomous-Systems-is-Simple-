@@ -4,19 +4,37 @@ vtysh << EOF
 
 configure terminal
 
-interface eth1
-ip address {{ r1_ip }}{{r1_submask }}
-
 interface eth0
  ip address {{ backbone1 }}1{{ backbone1_submask }}
 exit
-
-
-# next hop
-ip route {{ area2 }}0{{ area2_submask }} {{ backbone1 }}2
-
 
 end
 write memory
 
 EOF
+
+
+# Create bridge 0
+
+ip link add br0 type bridge
+ip link set br0 up
+
+
+# Add vxlan tag
+ip link add vxlan10 type vxlan \
+    id {{ vni10 }} \
+    dev eth0 \
+    local {{ backbone1 }}1 \
+    group {{ vtep_group1 }} \
+    dstport 4789
+
+
+
+ip link set eth1 master br0
+ip link set vxlan10 master br0
+
+
+ip link set eth1 up
+ip link set vxlan10 up
+
+ip addr add {{r1_ip}}{{r1_submask}} dev br0
