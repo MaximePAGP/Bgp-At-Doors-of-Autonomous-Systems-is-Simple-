@@ -15,7 +15,7 @@
     gns3_url: "http://127.0.0.1:3080"
     gns3_user: "admin"
     gns3_password: ""
-    project_name: "p2"
+    project_name: "p3"
 
   tasks:
 
