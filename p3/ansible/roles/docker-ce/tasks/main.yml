@@ -1,0 +1,113 @@
+- name: Remove old Docker repository file (avoid conflicts)
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/docker.list
+    state: absent
+  become: yes
+
+- name: Set Docker architecture
+  ansible.builtin.set_fact:
+    docker_arch: >-
+      {{
+        {
+          'x86_64': 'amd64',
+          'aarch64': 'arm64',
+          'armv7l': 'armhf'
+        }.get(ansible_architecture, ansible_architecture)
+      }}
+
+- name: Create keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+  become: yes
+
+# =========================
+# UBUNTU BLOCK
+# =========================
+
+- block:
+
+  - name: Remove conflicting packages (Ubuntu)
+    ansible.builtin.apt:
+      name:
+        - docker.io
+        - docker-compose
+        - docker-compose-v2
+        - docker-doc
+        - podman-docker
+        - containerd
+        - runc
+      state: absent
+    become: yes
+    ignore_errors: yes
+
+  - name: Install prerequisites (Ubuntu)
+    ansible.builtin.apt:
+      name:
+        - ca-certificates
+        - curl
+      state: present
+      update_cache: yes
+    become: yes
+
+  - name: Download Docker GPG key (Ubuntu)
+    ansible.builtin.get_url:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      dest: /etc/apt/keyrings/docker.asc
+      mode: "0644"
+    become: yes
+
+  - name: Add Docker repository (Ubuntu)
+    ansible.builtin.apt_repository:
+      repo: >
+        deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc]
+        https://download.docker.com/linux/ubuntu
+        {{ ansible_distribution_release }} stable
+      state: present
+      filename: docker
+      update_cache: yes
+    become: yes
+  
+  - name: Install docker-ce (Ubuntu)
+    ansible.builtin.apt:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-buildx-plugin
+        - docker-compose-plugin
+      state: present
+    notify: Restart Docker
+    become: yes
+
+
+  - name: Add user to docker group (Ubuntu)
+    ansible.builtin.user:
+      name: "{{ ansible_user }}"
+      groups: docker
+      append: yes
+    become: yes
+
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+# =========================
+# DEBIAN BLOCK
+# =========================
+
+- block:
+  - name: Download Docker GPG key (Debian)
+    ansible.builtin.get_url:
+      url: https://download.docker.com/linux/debian/gpg
+      dest: /etc/apt/keyrings/docker.gpg
+      mode: "0644"
+    become: yes
+  
+  - name: Add Docker repository (Debian)
+    ansible.builtin.apt_repository:
+      repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+      state: present
+      filename: docker
+    become: yes
+  
+  when: ansible_facts['distribution'] == "Debian"

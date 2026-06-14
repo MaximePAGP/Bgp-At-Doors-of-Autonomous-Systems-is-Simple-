@@ -1,0 +1,48 @@
+#!/bin/bash
+
+vtysh << EOF
+
+configure terminal
+
+interface eth0
+ ip address {{ backbone1 }}2{{ backbone1_submask }}
+exit
+
+end
+write memory
+
+EOF
+
+
+# Create bridge 0
+
+ip link add br0 type bridge
+ip link set br0 up
+
+
+# Add vxlan tag (STATIC MULTICAST) to bridge 0
+# ip link add vxlan10 type vxlan \
+#     id {{ vni10 }} \
+#     dev eth0 \
+#     local {{ backbone1 }}2 \
+#     remote {{ backbone1 }}1 \
+#     dstport 4789
+
+# Add vxlan tag (DYNAMIC MULTICAST) to bridge 0
+ip link add vxlan10 type vxlan \
+    id {{ vni10 }} \
+    dev eth0 \
+    local {{ backbone1 }}2 \
+    group {{ vtep_group1 }} \
+    dstport 4789
+
+
+
+ip link set eth1 master br0
+ip link set vxlan10 master br0
+
+
+ip link set eth1 up
+ip link set vxlan10 up
+
+ip addr add {{r2_ip}}{{r2_submask}} dev br0

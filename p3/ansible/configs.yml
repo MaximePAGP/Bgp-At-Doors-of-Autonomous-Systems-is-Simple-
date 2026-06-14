@@ -1,0 +1,100 @@
+
+- name: Deploy configs to GNS3 lab (p2)
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    config_map:
+      router_magrondi-1: r1_config.sh
+      router_magrondi-2: r2_config.sh
+      host_magrondi-1: h1_config.sh
+      host_magrondi-2: h2_config.sh
+      switch_magrondi: switch_config.sh
+
+    # Get your credentials here : ~/.config/GNS3/2.2/gns3_server.conf
+    gns3_url: "http://127.0.0.1:3080"
+    gns3_user: "admin"
+    gns3_password: ""
+    project_name: "p2"
+
+  tasks:
+
+    - name: Get GNS3 projects
+      ansible.builtin.uri:
+        url: "{{ gns3_url }}/v2/projects"
+        method: GET
+        return_content: yes
+        url_username: "{{ gns3_user }}"
+        url_password: "{{ gns3_password }}"
+        force_basic_auth: true
+      register: projects
+
+    - name: Extract project_id
+      ansible.builtin.set_fact:
+        project_id: >-
+          {{
+            (projects.json
+            | selectattr('name', 'equalto', project_name)
+            | list
+            | first).project_id
+          }}
+
+    - name: Show project_id
+      ansible.builtin.debug:
+        msg: "Project {{ project_name }} => {{ project_id }}"
+
+    - name: Get nodes of project
+      ansible.builtin.uri:
+        url: "{{ gns3_url }}/v2/projects/{{ project_id }}/nodes"
+        method: GET
+        return_content: yes
+        force_basic_auth: yes
+        url_username: "{{ gns3_user }}"
+        url_password: "{{ gns3_password }}"
+      register: nodes
+
+    - name: Get node details (container_id)
+      ansible.builtin.uri:
+        url: "{{ gns3_url }}/v2/projects/{{ project_id }}/nodes/{{ item.node_id }}"
+        method: GET
+        return_content: yes
+        force_basic_auth: yes
+        url_username: "{{ gns3_user }}"
+        url_password: "{{ gns3_password }}"
+      loop: "{{ nodes.json }}"
+      register: node_details
+
+    - name: Build node map (safe)
+      ansible.builtin.set_fact:
+        node_map: "{{ node_map | default([]) + [{
+            'name': item.json.name,
+            'container_id': item.json.properties.container_id | default(omit)
+          }] }}"
+      loop: "{{ node_details.results }}"
+      when: item.json.properties.container_id is defined
+
+    - name: DEBUG container mapping
+      ansible.builtin.debug:
+        msg:
+          name: "{{ item.json.name }}"
+          container_id: "{{ item.json.properties.container_id }}"
+      loop: "{{ node_details.results }}"
+
+    - name: Show important paths
+      ansible.builtin.debug:
+        msg:
+          pwd_env: "{{ lookup('env', 'PWD') }}"
+          playbook_dir: "{{ playbook_dir }}"
+          inventory_dir: "{{ inventory_dir | default('N/A') }}"
+
+    - name: Apply configs
+      ansible.builtin.shell: >
+        docker exec -i {{ item.container_id }} sh -s
+        < {{ frr_config_path }}/{{ config_map[item.name] }}
+      loop: "{{ node_map }}"
+      when: item.name in config_map
+
+    - name: Show mapping
+      ansible.builtin.debug:
+        msg: "{{ item.name }} -> {{ item.container_id }}"
+      loop: "{{ node_map }}"

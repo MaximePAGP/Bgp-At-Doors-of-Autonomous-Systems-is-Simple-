@@ -1,0 +1,7 @@
+#!/bin/bash
+
+ip addr add {{h2_ip}}{{h2_submask}} dev eth1
+ip link set eth1 up
+
+
+ip route add default via {{ r2_ip }}

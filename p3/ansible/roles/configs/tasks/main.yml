@@ -1,0 +1,26 @@
+- name: Load all variables
+  ansible.builtin.include_vars:
+    file: "../vars/all.yml"
+
+
+- name: Generate {{ item.name }}
+  ansible.builtin.template:
+    src: "{{ item.source }}"
+    dest: "{{ frr_config_path }}/{{ item.name }}"
+    mode: "0777"
+
+  loop:
+    - name:   h1_config.sh
+      source: h1_config.sh.j2
+
+    - name:   h2_config.sh
+      source: h2_config.sh.j2
+
+    - name:   r1_config.sh
+      source: r1_config.sh.j2
+
+    - name:   r2_config.sh
+      source: r2_config.sh.j2
+
+    - name:   switch_config.sh
+      source: switch_config.sh.j2
