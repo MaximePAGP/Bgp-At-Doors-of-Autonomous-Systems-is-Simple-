@@ -11,16 +11,10 @@ dockerfiles:
 
 re:
 	make fclean
-	make up
-
-stop:
-	vagrant halt
-
-reload:
-	vagrant reload
+	make dockerfiles
 
 fclean:
-	k3d cluster delete -a
+	docker system prune -a -f --volumes
 
 
-.PHONY: up re stop reload fclean configs dockerfiles
+.PHONY: up re fclean configs dockerfiles

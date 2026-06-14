@@ -19,8 +19,16 @@ EOF
 ip link add br0 type bridge
 ip link set br0 up
 
+# Add vxlan tag (STATIC MULTICAST) to bridge 0
+# ip link add vxlan10 type vxlan \
+#     id {{ vni10 }} \
+#     dev eth0 \
+#     local {{ backbone1 }}1 \
+#     remote {{ backbone1 }}2 \
+#     dstport 4789
 
-# Add vxlan tag
+
+# Add vxlan tag (DYNAMIC MULTICAST) to bridge 0
 ip link add vxlan10 type vxlan \
     id {{ vni10 }} \
     dev eth0 \
