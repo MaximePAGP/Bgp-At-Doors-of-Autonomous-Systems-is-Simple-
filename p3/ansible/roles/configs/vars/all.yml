@@ -1,36 +1,24 @@
-#### VTEP GROUPS ####
+##### VTEPS LO#####
 
-vtep_group1: "239.1.1.1"
+r1_lo0: "1.1.1.1/32"
+r2_lo0: "2.2.2.2/32"
+r3_lo0: "3.3.3.3/32"
+r4_lo0: "4.4.4.4/32"
 
-##### VNIs ######
-
-vni10 : "10"
-
-##### BACKBONES ####
-
-backbone1: "10.0.1."
-backbone1_submask: "/24"
 
 ##### AREAS ##### VNI 10 ###
 
 area1: "192.168.10."
 area1_submask: "/24"
 
-##### VTEPS #####
 
-r1_ip: "{{ area1 }}1"
-r1_submask: "/24"
-
-r2_ip: "{{ area1 }}2"
-r2_submask: "/24"
-
-##### HOSTS #### VNI 10 ####
+##### HOSTS # ### VNI 10 ####
 
 VNI_10: "10"
 
 h1_ip: "{{ area1 }}100"
-h1_submask: "/24"
 
 h2_ip: "{{ area1 }}101"
-h2_submask: "/24"
+
+h3_ip: "{{ area1 }}102"
 

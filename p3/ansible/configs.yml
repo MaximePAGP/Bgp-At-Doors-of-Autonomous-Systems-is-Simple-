@@ -5,16 +5,18 @@
 
   vars:
     config_map:
-      router_magrondi-1: r1_config.sh
-      router_magrondi-2: r2_config.sh
+      _magrondi-1: r1_config.sh
+      _magrondi-2: r2_config.sh
+      _magrondi-3: r3_config.sh
+      _magrondi-4: r4_config.sh
       host_magrondi-1: h1_config.sh
       host_magrondi-2: h2_config.sh
-      switch_magrondi: switch_config.sh
+      host_magrondi-3: h3_config.sh
 
     # Get your credentials here : ~/.config/GNS3/2.2/gns3_server.conf
     gns3_url: "http://127.0.0.1:3080"
     gns3_user: "admin"
-    gns3_password: ""
+    gns3_password: "htfK0hPe9NBSDQFtwXbdORwCJfqvRMm0kvyWjX7xvqbfsBAVmzeqtoq5u1hwACqO"
     project_name: "p3"
 
   tasks:

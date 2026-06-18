@@ -1,0 +1,74 @@
+# - name: Load common variables
+#   ansible.builtin.include_vars:
+#     file: "../vars/common.yml"
+
+# - name: Load BGP variables
+  # ansible.builtin.include_vars:
+    # file: "../vars/bgp.yml"
+# 
+# - name: Load OSPF variables
+  # ansible.builtin.include_vars:
+    # file: "../vars/ospf.yml"
+# 
+# - name: Load IS-IS variables
+  # ansible.builtin.include_vars:
+    # file: "../vars/isis.yml"
+
+- name: Ensure output directory exists
+  ansible.builtin.file:
+    path: "{{ frr_output_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Ensure config directory exists
+  ansible.builtin.file:
+    path: "{{ frr_config_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Generate Dockerfile for Busybox container
+  ansible.builtin.template:
+    src: busybox.j2
+    dest: "{{ frr_output_path }}/Dockerfile.busybox"
+    mode: 775
+
+
+- name: Generate Dockerfile for Network container
+  ansible.builtin.template:
+    src: network.j2
+    dest: "{{ frr_output_path }}/Dockerfile.network"
+    mode: 775
+
+- name: Build Docker images
+  community.docker.docker_image:
+    name: "{{ item.name }}"
+    tag: latest
+    source: build
+    build:
+      path: "{{ item.path }}"
+      dockerfile: "{{ item.dockerfile }}"
+    force_source: true
+  loop:
+    - name: busybox
+      path: "{{ frr_output_path }}"
+      dockerfile: Dockerfile.busybox
+
+    - name: network
+      path: "{{ frr_output_path }}"
+      dockerfile: Dockerfile.network
+
+
+# - name: Generate BGP config
+  # ansible.builtin.template:
+    # src: bgpd.conf.j2
+    # dest: "{{ frr_config_path }}/bgpd.conf"
+# 
+# - name: Generate OSPF config
+  # ansible.builtin.template:
+    # src: ospfd.conf.j2
+    # dest: "{{ frr_config_path }}/ospfd.conf"
+# 
+# - name: Generate IS-IS config
+  # ansible.builtin.template:
+    # src: isisd.conf.j2
+    # dest: "{{ frr_config_path }}/isisd.conf"
