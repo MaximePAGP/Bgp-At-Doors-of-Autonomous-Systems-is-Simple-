@@ -6,13 +6,20 @@ r3_lo0: "3.3.3.3/32"
 r4_lo0: "4.4.4.4/32"
 
 
-##### AREAS ##### VNI 10 ###
+##### VTEPS IP (UNDERLAY) #####
+
+r1_r2_rr_net: "10.255.1."
+r1_r3_rr_net: "10.255.2."
+r1_r4_rr_net: "10.255.3."
+
+
+##### AREAS (OVERLAY) ##### VNI 10 ###
 
 area1: "192.168.10."
 area1_submask: "/24"
 
 
-##### HOSTS # ### VNI 10 ####
+##### HOSTS (OVERLAY) ##### VNI 10 ####
 
 VNI_10: "10"
 
