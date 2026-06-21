@@ -11,6 +11,8 @@ vtysh << EOF
 
 configure terminal
 
+##### OSPF CONFIGURATION ######
+
 router ospf
  ospf router-id 4.4.4.4
  passive-interface lo
@@ -21,6 +23,22 @@ interface lo
 interface eth0
  ip ospf area 0
 
+###### BGP CONFIGURATION ######
+
+router bgp 65000
+ bgp router-id 4.4.4.4
+
+ neighbor 1.1.1.1 remote-as 65000
+ neighbor 1.1.1.1 update-source lo
+
+ address-family l2vpn evpn
+
+  neighbor 1.1.1.1 activate
+  advertise-all-vni
+
+ exit-address-family
+
+ 
 end
 write memory
 

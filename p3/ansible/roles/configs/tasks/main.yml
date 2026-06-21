@@ -16,11 +16,17 @@
     - name:   h2_config.sh
       source: h2_config.sh.j2
 
+    - name:   h3_config.sh
+      source: h3_config.sh.j2
+
     - name:   r1_config.sh
       source: r1_config.sh.j2
 
     - name:   r2_config.sh
       source: r2_config.sh.j2
 
-    - name:   switch_config.sh
-      source: switch_config.sh.j2
+    - name:   r3_config.sh
+      source: r3_config.sh.j2
+
+    - name:   r4_config.sh
+      source: r4_config.sh.j2
