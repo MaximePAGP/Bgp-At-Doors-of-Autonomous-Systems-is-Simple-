@@ -18,7 +18,7 @@ configure terminal
 ##### OSPF CONFIGURATION ######
 
 router ospf
- ospf router-id 1.1.1.1
+ ospf router-id {{ r1_id }}
  passive-interface lo
 
 interface lo
@@ -38,15 +38,15 @@ interface eth2
 
 
 router bgp 65000
- bgp router-id 1.1.1.1
+ bgp router-id {{ r1_id }}
 
  neighbor LEAFS peer-group
  neighbor LEAFS remote-as 65000
  neighbor LEAFS update-source lo
 
- neighbor 2.2.2.2 peer-group LEAFS
- neighbor 3.3.3.3 peer-group LEAFS
- neighbor 4.4.4.4 peer-group LEAFS
+ neighbor {{ r2_id }} peer-group LEAFS
+ neighbor {{ r3_id }} peer-group LEAFS
+ neighbor {{ r4_id }} peer-group LEAFS
 
  address-family l2vpn evpn
 

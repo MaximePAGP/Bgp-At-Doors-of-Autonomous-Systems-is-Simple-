@@ -1,5 +1,20 @@
 #!/bin/bash
 
+ip link add br10 type bridge
+ip link set br10 up
+
+ip link add vxlan10 type vxlan \
+ id 10 \
+ local {{ r4_id }} \
+ dstport 4789 \
+ nolearning
+
+ip link set vxlan10 up
+
+ip link set eth1 master br10
+ip link set vxlan10 master br10
+
+
 ip addr add {{ r4_lo0 }} dev lo
 
 ip addr add {{ r1_r4_rr_net }}2/30 dev eth0
@@ -14,7 +29,7 @@ configure terminal
 ##### OSPF CONFIGURATION ######
 
 router ospf
- ospf router-id 4.4.4.4
+ ospf router-id {{ r4_id }}
  passive-interface lo
 
 interface lo
@@ -26,14 +41,14 @@ interface eth0
 ###### BGP CONFIGURATION ######
 
 router bgp 65000
- bgp router-id 4.4.4.4
+ bgp router-id {{ r4_id }}
 
- neighbor 1.1.1.1 remote-as 65000
- neighbor 1.1.1.1 update-source lo
+ neighbor {{ r1_id }} remote-as 65000
+ neighbor {{ r1_id }} update-source lo
 
  address-family l2vpn evpn
 
-  neighbor 1.1.1.1 activate
+  neighbor {{ r1_id }} activate
   advertise-all-vni
 
  exit-address-family
